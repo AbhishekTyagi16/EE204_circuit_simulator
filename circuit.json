@@ -1,0 +1,108 @@
+[
+    {
+        "name": "V1",
+        "type": "V",
+        "branch_id": 1,
+        "node_pos": 1,
+        "node_neg": 2,
+        "value": 12.0
+    },
+    {
+        "name": "R1",
+        "type": "R",
+        "branch_id": 2,
+        "node_pos": 1,
+        "node_neg": 3,
+        "value": 12.0
+    },
+    {
+        "name": "C1",
+        "type": "C",
+        "branch_id": 3,
+        "node_pos": 3,
+        "node_neg": 4,
+        "value": 3.0
+    },
+    {
+        "name": "W1",
+        "type": "W",
+        "branch_id": 4,
+        "node_pos": 2,
+        "node_neg": 4,
+        "value": 0.0
+    },
+    {
+        "name": "L1",
+        "type": "L",
+        "branch_id": 5,
+        "node_pos": 3,
+        "node_neg": 5,
+        "value": 1.0
+    },
+    {
+        "name": "R2",
+        "type": "R",
+        "branch_id": 6,
+        "node_pos": 5,
+        "node_neg": 6,
+        "value": 4.0
+    },
+    {
+        "name": "W2",
+        "type": "W",
+        "branch_id": 7,
+        "node_pos": 4,
+        "node_neg": 6,
+        "value": 0.0
+    },
+    {
+        "name": "I1",
+        "type": "I",
+        "branch_id": 8,
+        "node_pos": 5,
+        "node_neg": 7,
+        "value": 4.0
+    },
+    {
+        "name": "R3",
+        "type": "R",
+        "branch_id": 9,
+        "node_pos": 7,
+        "node_neg": 8,
+        "value": 3.0
+    },
+    {
+        "name": "R4",
+        "type": "R",
+        "branch_id": 10,
+        "node_pos": 6,
+        "node_neg": 8,
+        "value": 2.0
+    },
+    {
+        "name": "W3",
+        "type": "W",
+        "branch_id": 11,
+        "node_pos": 6,
+        "node_neg": 9,
+        "value": 0.0
+    },
+    {
+        "name": "W4",
+        "type": "W",
+        "branch_id": 12,
+        "node_pos": 8,
+        "node_neg": 10,
+        "value": 0.0
+    },
+    {
+        "name": "E1",
+        "type": "E",
+        "branch_id": 13,
+        "node_pos": 9,
+        "node_neg": 10,
+        "value": 2.0,
+        "ctrl_pos": 1,
+        "ctrl_neg": 3
+    }
+]
