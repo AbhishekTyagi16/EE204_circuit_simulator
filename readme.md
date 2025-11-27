@@ -1,122 +1,151 @@
-# ⚡️ EE 204 Circuit Simulator: The Tie-Set Method
+# Circuit Simulator – EE204 Project
 
-**Course:** EE 204: Circuit Theory (3rd Semester)  
-**Institution:** Indian Institute of Technology Guwahati (IIT Guwahati)
+This repository contains an advanced Circuit Simulator capable of performing DC Operating Point Analysis, Laplace Domain Analysis, and Time Domain Transient Analysis. Unlike standard Modified Nodal Analysis (MNA) solvers, this project utilizes a Graph-Theoretic Tie-Set Matrix (Loop Analysis) approach to robustly solve linear RLC circuits containing both independent and dependent sources.
 
-This repository contains an advanced Circuit Simulator capable of performing **DC Operating Point Analysis**, **Laplace Domain Analysis**, and **Time Domain Transient Analysis**.
+**DC + Transient Circuit Simulator**, **Dependent Sources (VCVS, CCVS)**, **Laplace-domain analysis**, **GUI-based circuit builder**.
 
-Unlike standard Modified Nodal Analysis (MNA) solvers, this project utilizes a **Graph-Theoretic Tie-Set Matrix (Loop Analysis)** approach to robustly solve linear RLC circuits containing both independent and dependent sources.
+## Overview
 
----
+This project implements a **fully functional linear circuit simulation framework**, including a backend solver and a frontend schematic editor.
 
-## 🚀 Overview
+We can:
 
-This project implements a **fully functional linear circuit simulation framework**, consisting of a custom backend solver and a graphical frontend.
+- Draw circuits in a GUI
+- Export a JSON netlist
+- Run DC analysis
+- Run Laplace-domain analysis
+- Compute exact transient time-domain currents
+- Handle dependent sources
+- Analyze arbitrary circuit topologies
 
-**Key Capabilities:**
-* Draw circuits in an interactive GUI.
-* Export a JSON netlist.
-* Run DC & Laplace-domain analysis.
-* Compute exact **symbolic** transient time-domain currents.
-* Handle arbitrary circuit topologies with dependent sources.
+Everything is implemented in **pure Python**, without using any external circuit-simulation libraries.
 
-Everything is implemented in **pure Python**, without reliance on external circuit-simulation libraries like SPICE.
+The engine solves **any arbitrary linear circuit** composed of:
 
-### Supported Components
+| Component | Meaning                                  | Supported |
+| --------- | ---------------------------------------- | --------- |
+| R         | Resistor                                 | ✔         |
+| L         | Inductor                                 | ✔         |
+| C         | Capacitor                                | ✔         |
+| V         | Independent Voltage Source               | ✔         |
+| I         | Independent Current Source               | ✔         |
+| E         | VCVS (Voltage-Controlled Voltage Source) | ✔         |
+| H         | CCVS (Current-Controlled Voltage Source) | ✔         |
+| W         | Wire (short circuit)                     | ✔         |
 
-The engine solves any arbitrary linear circuit composed of the following:
+### Fully Supported Circuit Types
 
-| Symbol | Component | Supported |
-| :---: | :--- | :---: |
-| **R** | Resistor | ✅ |
-| **L** | Inductor | ✅ |
-| **C** | Capacitor | ✅ |
-| **V** | Independent Voltage Source | ✅ |
-| **I** | Independent Current Source | ✅ |
-| **E** | VCVS (Voltage-Controlled Voltage Source) | ✅ |
-| **H** | CCVS (Current-Controlled Voltage Source) | ✅ |
-| **W** | Wire (Short Circuit) | ✅ |
+- General DC circuits
+- RL / RC / LC / RLC circuits
+- Multi-loop and multi-node circuits
+- Circuits containing multiple independent sources
+- Circuits with **dependent sources (E, H)**
+- Circuits requiring transient response analysis
+- Circuits requiring symbolic Laplace-domain current expressions
 
-### Supported Circuit Types
-* General DC circuits
-* RL / RC / LC / RLC circuits
-* Multi-loop and multi-node topologies
-* Circuits with **Dependent Sources (E, H)**
-* Transient response analysis
-* Symbolic Laplace-domain calculations
+### Future Scope
 
----
+- Non-linear devices (diodes, transistors)
+- AC phasor mode (can be implemented very easily but no need)
+- Voltage controlled current source and current controlled current source
 
-## 🛠️ Backend Architecture
+### Assumptions & Constraints
 
-The backend is a custom-built engine leveraging graph theory and symbolic mathematics.
+Initial Conditions: For transient analysis, Zero State Response is assumed (Initial currents in Inductors and voltages across Capacitors are assumed to be zero).
+
+Connectivity: The circuit graph must be fully connected (no floating nodes).
+
+## Backend
+
+The is a custom-built engine using:
 
 ### 1. Node Consolidation (Union-Find)
-We use a disjoint-set data structure to automatically merge all wires into equivalent nodes, simplifying the topology before analysis.
+
+All wires are merged into equivalent nodes automatically.
 
 ### 2. Graph-Based Topology (NetworkX)
 
-
-[Image of graph theory spanning tree]
-
-* Automatically builds the circuit graph.
-* Selects a **Minimum Spanning Tree (MST)**.
-* Forces **Current Sources** to be links (avoiding singular matrices).
-* Generates the **Tie-Set Matrix ($B$)**.
+- Automatically builds circuit graph
+- Selects a **spanning tree**
+- Forces **current sources to be links** (avoids singular matrices)
+- Generates the **tie-set matrix B**
 
 ### 3. Loop Equation Formulation
-Currents are solved using the fundamental loop impedance equation:
 
-$$Z_{loop} \cdot I_{link} = V_{loop}$$
+Currents are solved using:
+```
+Z_loop · I_link = V_loop
+```
 
-Where $Z$ is the branch impedance matrix.
+Where Z is the branch impedance matrix.
 
 ### 4. Dependent Source Handling
-VCVS and CCVS components are processed by dynamically modifying the impedance matrix based on the control parameters.
+
+VCVS and CCVS are processed by modifying the impedance matrix based on:
+
+- Control voltage (E)
+- Control current (H)
 
 ### 5. DC Analysis
-* **Inductors** $\rightarrow$ Treated as Short Circuits.
-* **Capacitors** $\rightarrow$ Treated as Open Circuits.
+
+- Inductors → Short
+- Capacitors → Open
 
 ### 6. Laplace-Domain Analysis
-The solver transforms components into the $s$-domain:
-* **Inductor:** $Z_L = sL$
-* **Capacitor:** $Z_C = \frac{1}{sC}$
-* **Voltage Source:** $V(s) = \frac{V}{s}$
-* **Current Source:** $I(s) = \frac{I}{s}$
 
-*(Initial conditions for inductors are automatically included).*
+- Inductor impedance: `Z_L = sL`
+- Capacitor impedance: `Z_C = 1/(sC)`
+- Voltage source: `V/s`
+- Current source: `I/s`
+- Inductor initial currents included automatically
 
 ### 7. Exact Time-Domain Response
-Using `SymPy`, we perform the Inverse Laplace Transform to get exact equations:
 
-$$i(t) = \mathcal{L}^{-1}\{I(s)\}$$
+Using SymPy:
+```
+i(t) = L^(-1){I(s)}
+```
 
-This yields precise exponential and sinusoidal expressions (e.g., $1.6 + 0.8e^{-2t}\sin(3t)$).
+This gives exact exponential/sinusoidal expressions.
 
-### 8. Visualization
-All transient currents are plotted dynamically using `Matplotlib`.
+### 8. Plotting
 
----
+All transient currents are plotted using Matplotlib.
 
-## 🖥️ GUI Frontend (Tkinter)
+## GUI Frontend (Tkinter)
 
-The frontend provides a user-friendly interface for circuit design:
-* **Drag & Drop:** Easy component placement.
-* **Snap-to-Grid:** Keeps schematics clean.
-* **Auto-Merging:** Drawing wires automatically merges nodes.
-* **Netlist Export:** Generates a clean `circuit.json` for the backend.
+Features:
 
----
+- Drag & drop component placement
+- Snap-to-grid system
+- Wire drawing with automatic node merging
+- Input values for each component
+- Dependent source support (E, H)
+- Exports clean `circuit.json` netlist
 
-## ⚙️ Installation & Usage
+## Running the Project
 
-### 1. Setup Virtual Environment
+### Create Virtual Environment
 ```bash
 python -m venv .venv
-# Activate on Windows
+```
+
+### Activate Virtual Environment
+```bash
 .\.venv\Scripts\Activate.ps1
-# Activate on Mac/Linux
-source .venv/bin/activate
+```
 
+### Install Dependencies
+```bash
+pip install sympy numpy matplotlib networkx pandas
+```
 
+### Run Frontend
+```bash
+python frontend.py
+```
+
+### Run Backend
+```bash
+python circuit_analysis.py
+```
