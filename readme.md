@@ -2,7 +2,7 @@
 
 This repository contains an advanced Circuit Simulator capable of performing DC Operating Point Analysis, Laplace Domain Analysis, and Time Domain Transient Analysis. Unlike standard Modified Nodal Analysis (MNA) solvers, this project utilizes a Graph-Theoretic Tie-Set Matrix (Loop Analysis) approach to robustly solve linear RLC circuits containing both independent and dependent sources.
 
-Unique Features: **DC + Transient Circuit Simulator** with  
+**DC + Transient Circuit Simulator**   
 **Dependent Sources (VCVS, CCVS)**,  
 **Laplace-domain analysis**,  
  **GUI-based circuit builder**.
@@ -55,6 +55,7 @@ The engine solves **any arbitrary linear circuit** composed of:
 ### Assumptions & Constraints
 
 Initial Conditions: For transient analysis, Zero State Response is assumed (Initial currents in Inductors and voltages across Capacitors are assumed to be zero ).
+
 Connectivity: The circuit graph must be fully connected (no floating nodes).
 
 ## Backend
@@ -112,13 +113,13 @@ i(t) = \mathcal{L}^{-1}\{I(s)\}
 
 This gives exact exponential/sinusoidal expressions.
 
-### 8️⃣ Plotting
+### 8️.Plotting
 
 All transient currents are plotted using Matplotlib.
 
 ---
 
-## 🖼 GUI Frontend (Tkinter)
+##  GUI Frontend (Tkinter)
 
 Features:
 
@@ -150,3 +151,4 @@ python frontend.py
 # run backend
 
 python circuit_analysis.py
+
