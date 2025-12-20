@@ -149,3 +149,6 @@ python frontend.py
 ```bash
 python circuit_analysis.py
 ```
+##  Collaborators
+  -Abhishek Tyagi  
+  -Abhinav Gupta
